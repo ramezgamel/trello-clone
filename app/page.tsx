@@ -1,6 +1,6 @@
 "use client";
 
-import { SignInButton, SignUpButton, useUser } from "@clerk/nextjs";
+import { SignUpButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,10 +17,10 @@ import {
   ArrowRight,
   Trello,
 } from "lucide-react";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/navbar/Navbar";
 
 export default function HomePage() {
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn } = useUser();
 
   const features = [
     {
