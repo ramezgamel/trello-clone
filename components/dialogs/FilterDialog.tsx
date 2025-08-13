@@ -12,18 +12,25 @@ import { Input } from "../ui/input";
 import { Filter } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { closeDialog } from "@/lib/utils";
+import { FilterType } from "@/lib/supabase/models";
 
 export default function FilterDialog({
-  filterCount,
-  setFilterCount,
+  filter,
+  setFilter,
 }: {
-  filterCount: number;
-  setFilterCount: (count: number) => void;
+  filter: FilterType;
+  setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
 }) {
-  const [priority, setPriority] = useState<string | null>(null);
-
   const applyFilters = () => {
     closeDialog();
+  };
+
+  const handleFilterChange = (
+    type: "priority" | "assignee" | "dueDate",
+    value: string | string[] | null
+  ) => {
+    setFilter((prev) => ({ ...prev, [type]: value }));
+    getNumberOfFilter(filter);
   };
 
   return (
@@ -34,14 +41,14 @@ export default function FilterDialog({
             variant="outline"
             size="sm"
             className={`text-xs sm:text-sm ${
-              filterCount > 0 ? "bg-blue-100 border-blue-200" : ""
+              getNumberOfFilter(filter) > 0 ? "bg-blue-100 border-blue-200" : ""
             }`}
           >
             <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             <span className="hidden sm:inline">Filter</span>
-            {filterCount > 0 && (
+            {getNumberOfFilter(filter) > 0 && (
               <Badge variant="secondary" className="text-xs ml-1 sm:ml-2 ">
-                {filterCount}
+                {getNumberOfFilter(filter)}
               </Badge>
             )}
           </Button>
@@ -65,8 +72,13 @@ export default function FilterDialog({
                 <Button
                   key={i}
                   size="sm"
-                  variant={priority === p ? "outline" : "secondary"}
-                  onClick={() => setPriority(p)}
+                  variant={filter.priority.includes(p) ? "default" : "outline"}
+                  onClick={() => {
+                    const newPriority = filter.priority.includes(p)
+                      ? filter.priority.filter((pr) => pr !== p)
+                      : [...filter.priority, p];
+                    handleFilterChange("priority", newPriority);
+                  }}
                 >
                   {p.charAt(0).toUpperCase() + p.slice(1)}
                 </Button>
@@ -90,13 +102,19 @@ export default function FilterDialog({
           </div> */}
           <div className="space-y-2">
             <Label>Due Date</Label>
-            <Input type="date" />
+            <Input
+              type="date"
+              value={filter.dueDate || ""}
+              onChange={(e) => handleFilterChange("dueDate", e.target.value)}
+            />
           </div>
-          <div className="space-x-2">
+          <div className="space-x-2 flex justify-end items-center">
             <Button
-              onClick={() => setFilterCount(0)}
               type="button"
               variant={"outline"}
+              onClick={() =>
+                setFilter({ priority: [], assignee: [], dueDate: null })
+              }
             >
               Clear Filters
             </Button>
@@ -108,4 +126,10 @@ export default function FilterDialog({
       </DialogContent>
     </Dialog>
   );
+}
+
+function getNumberOfFilter(filterObj: FilterType) {
+  return Object.values(filterObj)
+    .flatMap((v) => v)
+    .filter((v) => Boolean(v)).length;
 }

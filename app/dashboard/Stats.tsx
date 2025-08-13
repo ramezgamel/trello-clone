@@ -1,9 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useBoards } from "@/lib/hooks/useBoards";
+import { Board } from "@/lib/supabase/models";
 import { Rocket, Trello } from "lucide-react";
 
-export default function Stats() {
-  const { loading, error, boards } = useBoards();
+export default function Stats({ boards }: { boards: Board[] }) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 my-6">
       <Card>

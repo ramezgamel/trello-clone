@@ -1,29 +1,36 @@
 import { Button } from "@/components/ui/button";
-import { Filter, Grid3X3, List, Search } from "lucide-react";
-import { useState } from "react";
+import { Grid3X3, List } from "lucide-react";
 import CreateBoardBtn from "./CreateBoardBtn";
-import { Input } from "@/components/ui/input";
+import FilterBoardsDialog from "@/components/dialogs/FilterBoardsDialog";
+import { Board } from "@/lib/supabase/models";
+import React, { SetStateAction } from "react";
+import Header from "./Header";
 
 export default function FilterBtns({
   viewMode,
   setViewMode,
+  createBoard,
+  loading,
+  boards,
+  setFilteredBoards,
 }: {
   viewMode: string;
   setViewMode: (viewMode: string) => void;
+  createBoard: (data: {
+    title: string;
+    description?: string;
+    color?: string;
+  }) => Promise<void>;
+  loading: boolean;
+  boards: Board[];
+  setFilteredBoards: React.Dispatch<SetStateAction<Board[]>>;
 }) {
   return (
     <div className="mb-6 sm:mb-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-4">
-        {/* header */}
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold font-gray-900">
-            Your Boards
-          </h2>
-          <span className="text-gray-600">Manage your projects and tasks</span>
-        </div>
-        {/* btns */}
+        <Header numberOfBoards={boards.length} />
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 space-x-1">
-          <div className="flex items-center space-x-2 bg-white border p-1 rounded-md">
+          <div className="flex items-center space-x-2 bg-white border p-1 sm:p-0  rounded-md">
             <Button
               variant={viewMode === "grid" ? "default" : "ghost"}
               onClick={() => setViewMode("grid")}
@@ -39,23 +46,17 @@ export default function FilterBtns({
               <List />
             </Button>
           </div>
-          <Button variant="outline" size="sm">
-            <Filter />
-            Filter
-          </Button>
-          <CreateBoardBtn />
+          <FilterBoardsDialog
+            boards={boards}
+            setFilteredBoards={setFilteredBoards}
+          />
+          <CreateBoardBtn
+            numberOfBoards={boards.length}
+            loading={loading}
+            createBoard={createBoard}
+          />
         </div>
       </div>
-      <SearchBar />
     </div>
   );
 }
-
-const SearchBar = () => {
-  return (
-    <div className="relative mb-4 sm:mb-6">
-      <Search className="absolute left-3 top-1/2 transform text-gray-400 -translate-y-1/2 h-4 w-4" />
-      <Input id="search" placeholder="Search boards..." className="pl-10" />
-    </div>
-  );
-};

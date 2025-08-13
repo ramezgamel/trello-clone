@@ -1,11 +1,22 @@
-import { useBoards } from "@/lib/hooks/useBoards";
 import Error from "../../components/shared/Error";
 import Loader from "../../components/shared/Loader";
-import CreateBoardCard from "./CreateBoardCard";
 import BoardCard from "./BoardCard";
+import { Board } from "@/lib/supabase/models";
+import { ReactNode } from "react";
 
-export default function Boards({ viewMode }: { viewMode: string }) {
-  const { error, loading, boards } = useBoards();
+export default function Boards({
+  viewMode,
+  boards,
+  error,
+  loading,
+  children,
+}: {
+  viewMode: string;
+  boards: Board[];
+  error: string | null;
+  loading: boolean;
+  children: ReactNode;
+}) {
   if (loading) return <Loader />;
   if (error) return <Error error={error} />;
   if (boards.length === 0) return <div>No boards yet</div>;
@@ -20,7 +31,7 @@ export default function Boards({ viewMode }: { viewMode: string }) {
       {boards.map((board) => (
         <BoardCard key={board.id} board={board} />
       ))}
-      <CreateBoardCard />
+      {children}
     </div>
   );
 }

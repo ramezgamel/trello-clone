@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/navbar/Navbar";
 import SupabaseProvider from "@/lib/supabase/SupabaseProvider";
 
 const geistSans = Geist({
@@ -35,7 +34,6 @@ export default function RootLayout({
       >
         <ClerkProvider>
           <SupabaseProvider>
-            <Navbar />
             <main className=" flex-1 bg-gradient-to-br from-blue-50 via-white to-purple-50 ">
               {children}
             </main>

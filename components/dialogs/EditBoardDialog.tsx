@@ -3,21 +3,20 @@ import { Button } from "../ui/button";
 import { Dialog, DialogContent, DialogTitle } from "../ui/dialog";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import { useBoard } from "@/lib/hooks/useBoards";
 import { closeDialog } from "@/lib/utils";
 import { DialogTrigger } from "@radix-ui/react-dialog";
 import { MoreHorizontal } from "lucide-react";
+import { Board } from "@/lib/supabase/models";
 
-export default function EditDialog({
-  id,
-}: // isEditing,
-// setIsEditing,
-{
-  id: string;
-  // isEditing: boolean;
-  // setIsEditing: (isEditing: boolean) => void;
+export default function EditBoardDialog({
+  loading,
+  board,
+  updateBoard,
+}: {
+  loading: boolean;
+  board: Board;
+  updateBoard: (borderId: string, newData: Partial<Board>) => Promise<void>;
 }) {
-  const { board, updateBoard, loading } = useBoard(id);
   const [newTitle, setNewTitle] = useState(board?.title || "");
   const [newColor, setNewColor] = useState(board?.color || "");
   useEffect(() => {
@@ -37,7 +36,6 @@ export default function EditDialog({
         title: newTitle,
         color: newColor,
       });
-      // setIsEditing(false);
       closeDialog();
       setNewTitle("");
       setNewColor("");

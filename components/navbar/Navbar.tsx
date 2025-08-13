@@ -1,19 +1,16 @@
 "use client";
 import { UserButton, useUser } from "@clerk/nextjs";
-import { ArrowLeft, ArrowRight, Trello } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Logo from "./Logo";
 import AuthButtons from "./AuthButtons";
-import BoardNav from "./BoardNav";
 
 export default function Navbar() {
   const { isSignedIn, user } = useUser();
   const pathName = usePathname();
   const isDashboardPage = pathName === "/dashboard";
-  const isBoardPage = pathName.startsWith("/boards/");
-  if (isBoardPage) return <BoardNav />;
   return (
     <header className="border bg-white/80 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between ">

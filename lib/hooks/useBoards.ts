@@ -3,7 +3,12 @@ import { useUser } from "@clerk/nextjs";
 import { useSupabase } from "../supabase/SupabaseProvider";
 import { useEffect, useState } from "react";
 import { Board, ColumnWithTasks, Task } from "../supabase/models";
-import { boardDataService, boardService, tasksService } from "../services";
+import {
+  boardDataService,
+  boardService,
+  columnService,
+  tasksService,
+} from "../services";
 
 export function useBoards() {
   const { user } = useUser();
@@ -63,12 +68,13 @@ export function useBoard(boardId: string) {
   const { supabase } = useSupabase();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { user } = useUser();
 
   useEffect(() => {
     if (boardId) {
       getBoard();
     }
-  }, [boardId, supabase]);
+  }, [boardId]);
 
   const getBoard = async () => {
     if (!boardId) return;
@@ -87,7 +93,10 @@ export function useBoard(boardId: string) {
       setLoading(false);
     }
   };
-  const updateBoard = async (borderId: string, newData: Partial<Board>) => {
+  const updateBoard = async (
+    borderId: string,
+    newData: Partial<Board>
+  ): Promise<void> => {
     try {
       setLoading(true);
       const updatedBoard = await boardService.update(
@@ -96,7 +105,6 @@ export function useBoard(boardId: string) {
         newData
       );
       setBoard(updatedBoard);
-      return updateBoard;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update Board");
     } finally {
@@ -171,7 +179,40 @@ export function useBoard(boardId: string) {
       setError(err instanceof Error ? err.message : "Failed to create Task");
     }
   };
-
+  const createColumn = async (title: string) => {
+    if (!board) throw new Error("Board not loaded.");
+    if (!user) throw new Error("You are not authenticated");
+    try {
+      const column = {
+        board_id: board.id,
+        title: title,
+        sort_order: columns.length,
+        user_id: user.id,
+      };
+      const newColumn = await columnService.create(supabase!, column);
+      setColumns((prev) => [...prev, { ...newColumn, tasks: [] }]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create column");
+    }
+  };
+  const updateColumn = async (title: string, columnId: string) => {
+    if (!board) throw new Error("Board not loaded.");
+    if (!user) throw new Error("You are not authenticated");
+    try {
+      const updatedColumn = await columnService.update(
+        supabase!,
+        columnId,
+        title
+      );
+      setColumns((prev) =>
+        prev.map((col) =>
+          col.id === columnId ? { ...col, ...updatedColumn } : col
+        )
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create column");
+    }
+  };
   return {
     board,
     columns,
@@ -182,5 +223,7 @@ export function useBoard(boardId: string) {
     createTask,
     setColumns,
     moveTask,
+    createColumn,
+    updateColumn,
   };
 }

@@ -8,6 +8,12 @@ export interface Board {
   updated_at: string;
 }
 
+export type FilterType = {
+  priority: string[];
+  assignee: string[];
+  dueDate: string | null;
+};
+
 export interface Column {
   id: string;
   board_id: string;

@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 
 export default function AuthButtons() {
   return (
-    <div className="flex items-center space-x-2 sm:space-x-4">
+    <div className="flex gap-2 items-center space-x-2 sm:space-x-4">
       <div>
         <SignInButton>
           <Button

@@ -110,7 +110,20 @@ export const columnService = {
     if (error) throw error;
     return data;
   },
-  async update(supabase: SupabaseClient, borderId: string) {},
+  async update(
+    supabase: SupabaseClient,
+    title: string,
+    columnId: string
+  ): Promise<Column> {
+    const { data, error } = await supabase
+      .from("columns")
+      .update({ title })
+      .eq("id", columnId)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
   async delete() {},
 };
 

@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useBoard } from "@/lib/hooks/useBoards";
+import { Task } from "@/lib/supabase/models";
 import { closeDialog } from "@/lib/utils";
 import { SelectTrigger } from "@radix-ui/react-select";
 import { Plus } from "lucide-react";
@@ -24,15 +25,16 @@ import { FormEvent } from "react";
 
 export default function AddTaskDialog({
   targetColumnId,
-  boardId,
+  createTask,
+  loading,
   asCard = false,
 }: {
   targetColumnId: string;
   boardId: string;
   asCard?: boolean;
+  loading: boolean;
+  createTask: (columnId: string, taskData: Partial<Task>) => void;
 }) {
-  const { createTask, loading } = useBoard(boardId);
-
   const handleAddTask = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);

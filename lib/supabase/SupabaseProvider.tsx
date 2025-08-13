@@ -2,6 +2,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { useSession } from "@clerk/nextjs";
+import PageLoader from "@/components/shared/PageLoader";
 
 type SupabaseContext = {
   supabase: SupabaseClient | null;
@@ -20,6 +21,7 @@ export default function SupabaseProvider({
   const [isLoaded, setIsLoaded] = useState(false);
   useEffect(() => {
     if (!session) return;
+
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_KEY!,
@@ -27,12 +29,13 @@ export default function SupabaseProvider({
         accessToken: async () => session?.getToken() ?? null,
       }
     );
+
     setSupabase(client);
     setIsLoaded(true);
   }, [session]);
   return (
     <supabaseContext.Provider value={{ supabase, isLoaded }}>
-      {isLoaded ? children : <div>Loading...</div>}
+      {isLoaded ? children : <PageLoader />}
     </supabaseContext.Provider>
   );
 }

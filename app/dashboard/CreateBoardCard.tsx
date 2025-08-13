@@ -1,10 +1,18 @@
 import Loader from "@/components/shared/Loader";
 import { Card, CardContent } from "@/components/ui/card";
-import { useBoards } from "@/lib/hooks/useBoards";
 import { Plus } from "lucide-react";
 
-export default function CreateBoardCard() {
-  const { createBoard, loading } = useBoards();
+export default function CreateBoardCard({
+  createBoard,
+  loading,
+}: {
+  createBoard: (data: {
+    title: string;
+    color?: string;
+    description?: string;
+  }) => Promise<void>;
+  loading: boolean;
+}) {
   const handleCreateBoard = async () => {
     createBoard({ title: "new board" });
   };
