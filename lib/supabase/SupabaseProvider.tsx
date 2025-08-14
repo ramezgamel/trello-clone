@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { useSession } from "@clerk/nextjs";
 import PageLoader from "@/components/shared/PageLoader";
+import { usePathname } from "next/navigation";
 
 type SupabaseContext = {
   supabase: SupabaseClient | null;
@@ -19,8 +20,10 @@ export default function SupabaseProvider({
   const { session } = useSession();
   const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const pathName = usePathname();
+  const isNotSign = pathName === "/dashboard" || pathName === "/boards";
   useEffect(() => {
-    if (!session) return;
+    if (!session && isNotSign) return;
 
     const client = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,6 +32,7 @@ export default function SupabaseProvider({
         accessToken: async () => session?.getToken() ?? null,
       }
     );
+    console.log(client);
 
     setSupabase(client);
     setIsLoaded(true);
